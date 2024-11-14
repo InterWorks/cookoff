@@ -2,13 +2,12 @@
 <div>
     <form onsubmit="return false;">
         <div wire:key="{{ $contest->id . '-' . $entry->id . '-' . $ratingFactor->id }}"class="relative">
-            <input type="number"
+            <input type="text"
                 wire:model.live.debounce="rating"
                 wire:change="updateRating"
                 wire:target="updateRating"
                 wire:loading.class="bg-yellow-100"
-                wire:loading.attr="disabled"
-                class="form-control rating-input"
+                class="form-control rating-input @error('rating') bg-red-100 border-red-500 @enderror"
                 placeholder="Enter your rating">
             <span wire:target="updateRating"
                 wire:loading.class="inline-block"
@@ -25,6 +24,7 @@
                         d="M4.5 12a7.5 7.5 0 017.5-7.5V3m0 18v-1.5a7.5 7.5 0 007.5-7.5H21" />
                 </svg>
             </span>
+            <span class="text-red-500">@error('rating'){{ $message }}@enderror</span>
         </div>
     </form>
 </div>
