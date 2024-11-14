@@ -26,6 +26,10 @@
     </table>
 
     <div class="mt-6">
-        <a href="<?= route('contests.show', ['contest' => $contest->id]) ?>" wire:navigate>See Results</a>
+        <a href="<?= route('contests.show', ['contest' => $contest->id]) ?>"
+            class="hover:underline"
+            wire:navigate>
+            See Results
+        </a>
     </div>
 </x-layout>
