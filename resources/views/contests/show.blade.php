@@ -2,6 +2,7 @@
     <x-slot:heading>
         <?= $contest->name ?>
     </x-slot:heading>
+    <p class="mb-10"><?= $contest->description ?></p>
 
     <div class="mt-4 block px-4 py-6 border border-gray-200 rounded-lg">
         <a href="<?= route('contests.vote', ['contest' => $contest->id]) ?>"

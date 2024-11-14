@@ -2,6 +2,8 @@
     <x-slot:heading>
         Vote in <?= $contest->name ?>
     </x-slot:heading>
+    <p class="mb-10"><?= $contest->description ?></p>
+
     <table class="mt-4">
         <thead>
             <tr>
