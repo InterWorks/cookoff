@@ -2,12 +2,13 @@
 
 namespace App\Livewire;
 
-use Exception;
 use App\Models\Contest;
 use App\Models\Entry;
 use App\Models\RatingFactor;
 use App\Models\Vote;
+use Exception;
 use Illuminate\Support\Facades\Session;
+use Livewire\Attributes\Validate;
 use Livewire\Component;
 
 class VoteRating extends Component
@@ -15,6 +16,8 @@ class VoteRating extends Component
     public $contest;
     public $entry;
     public $ratingFactor;
+
+    #[Validate('numeric')]
     public $rating = null;
 
     private Vote $vote;
@@ -77,6 +80,8 @@ class VoteRating extends Component
      */
     public function updateRating()
     {
+        $this->validate();
+
         $sessionKey = "vote_" . $this->contest->getKey();
         $this->vote = Session::get($sessionKey);
         $voteRating = $this->vote->voteRatings()
