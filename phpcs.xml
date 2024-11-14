@@ -1,0 +1,126 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<ruleset name="InterWorks">
+    <description>Project and Issue Management Coding Standards</description>
+    <exclude-pattern>/config/*</exclude-pattern>
+    <exclude-pattern>/vendor/*</exclude-pattern>
+    <exclude-pattern>/bootstrap/*</exclude-pattern>
+    <exclude-pattern>/node_modules/*</exclude-pattern>
+    <exclude-pattern>/storage/*</exclude-pattern>
+    <exclude-pattern>/tests/*.php</exclude-pattern>
+    <arg name="tab-width" value="4" />
+    <rule ref="Generic.Files.LineEndings">
+        <properties>
+            <property name="eolChar" value="\n" />
+        </properties>
+    </rule>
+
+    <rule ref="Generic.PHP.ForbiddenFunctions">
+        <properties>
+            <property name="forbiddenFunctions" type="array">
+                <element key="dd" value="null" />
+                <element key="is_empty" value="null" />
+                <element key="sizeof" value="count" />
+                <element key="print" value="echo" />
+                <element key="ngettext" value="Utils::ngettext" />
+            </property>
+        </properties>
+    </rule>
+
+    <rule ref="Generic.ControlStructures.InlineControlStructure"/>
+    <rule ref="Generic.PHP.LowerCaseConstant"/>
+    <rule ref="Squiz.WhiteSpace.ControlStructureSpacing.SpacingAfterOpen" />
+    <rule ref="Squiz.WhiteSpace.ControlStructureSpacing.SpacingBeforeClose" />
+    <rule ref="Squiz.WhiteSpace.ScopeClosingBrace" />
+    <rule ref="Squiz.ControlStructures.ForEachLoopDeclaration" />
+    <rule ref="Squiz.ControlStructures.ForLoopDeclaration" />
+    <rule ref="Squiz.ControlStructures.LowercaseDeclaration" />
+    <rule ref="Squiz.Functions.LowercaseFunctionKeywords" />
+    <rule ref="Squiz.Functions.FunctionDuplicateArgument" />
+    <rule ref="Squiz.ControlStructures.ForEachLoopDeclaration.AsNotLower" />
+    <rule ref="Squiz.Scope.MethodScope" />
+    <rule ref="Squiz.WhiteSpace.ScopeKeywordSpacing" />
+    <rule ref="Squiz.Arrays.ArrayDeclaration.DoubleArrowNotAligned">
+        <exclude-pattern>/config/*</exclude-pattern>
+        <exclude-pattern>/tests/Feature/*</exclude-pattern>
+    </rule>
+    <rule ref="Squiz.Classes.LowercaseClassKeywords" />
+
+    <!-- PHPDoc rules -->
+    <rule ref="Squiz.Commenting.FunctionComment">
+        <exclude-pattern>/database/migrations/*</exclude-pattern>
+    </rule>
+    <rule ref="Squiz.Commenting.FunctionCommentThrowTag"/>
+
+    <rule ref="Zend.Files.ClosingTag" />
+    <rule ref="PEAR.Functions.ValidDefaultValue" />
+
+    <rule ref="PSR2.ControlStructures.SwitchDeclaration" />
+    <rule ref="PSR2.Methods.FunctionCallSignature" />
+
+    <rule ref="PSR12">
+        <exclude name="PSR1.Files.SideEffects.FoundWithSymbols" />
+        <exclude name="PSR1.Methods.CamelCapsMethodName.NotCamelCaps" />
+        <exclude name="PSR2.Methods.MethodDeclaration.Underscore" />
+        <exclude name="PSR2.Classes.PropertyDeclaration"/>
+        <exclude name="PSR12.Properties.ConstantVisibility.NotFound" />
+        <exclude name="Squiz.Classes.ValidClassName.NotCamelCaps" />
+    </rule>
+
+    <rule ref="PSR1.Classes.ClassDeclaration.MissingNamespace">
+        <exclude-pattern>*/php_worker.example.php</exclude-pattern>
+    </rule>
+
+    <rule ref="Squiz.WhiteSpace.SuperfluousWhitespace" />
+    <rule ref="Squiz.WhiteSpace.SuperfluousWhitespace.StartFile">
+        <severity>0</severity>
+    </rule>
+    <rule ref="Squiz.WhiteSpace.SuperfluousWhitespace.EndFile">
+        <severity>0</severity>
+    </rule>
+    <rule ref="Squiz.WhiteSpace.SuperfluousWhitespace.EmptyLines">
+        <severity>10</severity>
+    </rule>
+    <rul ref="Squiz.WhiteSpace.SemicolonSpacing" />
+    <rul ref="Squiz.PHP.NonExecutableCode" />
+    <rul ref="Squiz.Scope.StaticThisUsage" />
+
+    <rule ref="Generic.Metrics.CyclomaticComplexity"/>
+    <rule ref="Generic.Metrics.NestingLevel"/>
+    <rule ref="Squiz.Functions.MultiLineFunctionDeclaration" />
+
+    <!-- Removing Sniffs from Generic as we do not want these -->
+    <rule ref="Generic">
+        <exclude name="Generic.Commenting.Todo" />
+        <exclude name="Generic.Files.EndFileNoNewline" />
+        <exclude name="Generic.Files.LineLength" />
+        <exclude name="Generic.Files.OneInterfacePerFile" />
+        <exclude name="Generic.Formatting.NoSpaceAfterCast" />
+        <exclude name="Generic.Functions.OpeningFunctionBraceKernighanRitchie" />
+        <exclude name="Generic.NamingConventions.CamelCapsFunctionName" />
+        <exclude name="Generic.PHP.ClosingPHPTag" />
+        <exclude name="Generic.WhiteSpace.DisallowSpaceIndent" />
+        <exclude name="Generic.Files.LowercasedFilename" />
+        <exclude name="Generic.CodeAnalysis.AssignmentInCondition" />
+        <exclude name="Generic.Arrays.DisallowShortArraySyntax" />
+        <exclude name="Generic.PHP.DisallowShortOpenTag" />
+        <exclude name="Generic.PHP.NoSilencedErrors" />
+        <exclude name="Generic.Files.InlineHTML" />
+        <exclude name="Generic.CodeAnalysis.UnusedFunctionParameter" />
+        <exclude name="Generic.CodeAnalysis.EmptyStatement" />
+        <exclude name="Generic.Arrays.DisallowLongArraySyntax" />
+        <exclude name="Generic.PHP.UpperCaseConstant" />
+        <exclude name="Generic.Commenting.DocComment.MissingShort" />
+        <exclude name="Generic.Commenting.DocComment.ShortNotCapital" />
+        <exclude name="Generic.Strings.UnnecessaryStringConcat" />
+        <exclude name="Generic.NamingConventions.UpperCaseConstantName" />
+        <exclude name="Generic.PHP.RequireStrictTypes.MissingDeclaration" />
+        <exclude name="Generic.Files.ExecutableFile.Executable" />
+        <exclude name="Generic.Commenting.DocComment" />
+        <exclude name="Generic.Formatting.SpaceBeforeCast.NoSpace" />
+        <exclude name="Generic.Formatting.SpaceAfterNot" />
+        <exclude name="Generic.NamingConventions.AbstractClassNamePrefix.Missing" />
+        <exclude name="Generic.NamingConventions.TraitNameSuffix.Missing" />
+        <exclude name="Generic.Functions.OpeningFunctionBraceBsdAllman.BraceOnSameLine" />
+        <exclude name="Generic.Classes.OpeningBraceSameLine.BraceOnNewLine" />
+    </rule>
+</ruleset>
