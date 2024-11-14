@@ -13,6 +13,8 @@
 
         <!-- Styles -->
         @vite(['resources/css/app.css', 'resources/js/app.js'])
+
+        <link rel="icon" href="{{ Vite::asset('resources/images/iw_logo.svg') }}" type="image/svg+xml">
     </head>
 
     <body class="h-full font-sans antialiased">

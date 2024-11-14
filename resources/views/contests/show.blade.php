@@ -4,7 +4,11 @@
     </x-slot:heading>
 
     <div class="mt-4 block px-4 py-6 border border-gray-200 rounded-lg">
-        <a href="<?= route('contests.vote', ['contest' => $contest->id]) ?>" wire:navigate>Vote in Contest</a>
+        <a href="<?= route('contests.vote', ['contest' => $contest->id]) ?>"
+            class="hover:underline"
+            wire:navigate>
+            Vote in Contest
+        </a>
 
         <div class="mt-6">
             <img src="https://api.qrserver.com/v1/create-qr-code/?size=150x150&data=<?= urlencode(route('contests.vote', ['contest' => $contest->id])) ?>" alt="QR Code">
