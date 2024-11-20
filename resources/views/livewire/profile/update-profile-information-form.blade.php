@@ -8,8 +8,9 @@ use Livewire\Volt\Component;
 
 new class extends Component
 {
-    public string $name  = '';
-    public string $email = '';
+    public string $name     = '';
+    public string $email    = '';
+    public string $timezone = '';
 
     /**
      * Mount the component.
@@ -18,8 +19,9 @@ new class extends Component
      */
     public function mount(): void
     {
-        $this->name  = Auth::user()->name;
-        $this->email = Auth::user()->email;
+        $this->name     = Auth::user()->name;
+        $this->email    = Auth::user()->email;
+        $this->timezone = Auth::user()->timezone ?? config('app.timezone');
     }
 
     /**
@@ -32,8 +34,9 @@ new class extends Component
         $user = Auth::user();
 
         $validated = $this->validate([
-            'name'  => ['required', 'string', 'max:255'],
-            'email' => ['required', 'string', 'lowercase', 'email', 'max:255', Rule::unique(User::class)->ignore($user->id)],
+            'name'     => ['required', 'string', 'max:255'],
+            'email'    => ['required', 'string', 'lowercase', 'email', 'max:255', Rule::unique(User::class)->ignore($user->id)],
+            'timezone' => ['required', 'string', Rule::in(timezone_identifiers_list())],
         ]);
 
         $user->fill($validated);
@@ -108,6 +111,21 @@ new class extends Component
                     @endif
                 </div>
             @endif
+        </div>
+        @php
+            $userTimezone = auth()->user()->timezone ?? config('app.timezone');
+        @endphp
+        <div>
+            <x-input-label for="timezone" :value="__('Timezone')" />
+            <x-select-input wire:model="timezone" id="timezone" name="timezone" class="mt-1 block w-full" required>
+                @foreach (timezone_identifiers_list() as $timezone)
+                    <option value="{{ $timezone }}"
+                        {{ $timezone === $userTimezone ? 'selected' : '' }}>
+                        {{ $timezone }}
+                    </option>
+                @endforeach
+            </x-select-input>
+            <x-input-error class="mt-2" :messages="$errors->get('timezone')" />
         </div>
 
         <div class="flex items-center gap-4">

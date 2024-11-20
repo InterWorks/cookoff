@@ -17,8 +17,9 @@ class ContestFactory extends Factory
     public function definition(): array
     {
         return [
-            'name'        => $this->faker->city . ' ' . $this->faker->year . ' Cook-off',
-            'description' => $this->faker->text,
+            'name'                           => $this->faker->city . ' ' . $this->faker->year . ' Cook-off',
+            'description'                    => $this->faker->text,
+            'entry_description_display_type' => $this->faker->randomElement(['hidden', 'tooltip', 'inline']),
         ];
     }
 }
