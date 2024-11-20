@@ -1,7 +1,7 @@
 
 <div>
     <form onsubmit="return false;">
-        <div wire:key="{{ $contest->id . '-' . $entry->id . '-' . $ratingFactor->id }}"class="relative">
+        <div wire:key="{{ $componentID }}" class="relative">
             <input type="text"
                 wire:model.live.debounce="rating"
                 wire:change="updateRating"
@@ -28,10 +28,6 @@
         </div>
     </form>
 </div>
-{{-- <div wire:key="{{ $contest->id . '-' . $entry->id . '-' . $ratingFactor->id }}">
-    <input type="int" wire:model.live.debounce="rating" class="form-control rating-input" placeholder="Enter your rating" wire:change="updateRating">
-    <span><!-- placeholder for pending versus saved icon --></span>
-</div> --}}
 
 <script>
     document.addEventListener('DOMContentLoaded', function () {

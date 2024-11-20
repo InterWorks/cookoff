@@ -13,6 +13,7 @@ use Livewire\Component;
 
 class VoteRating extends Component
 {
+    public $componentID;
     public $contest;
     public $entry;
     public $ratingFactor;
@@ -21,6 +22,10 @@ class VoteRating extends Component
     public $rating = null;
 
     private Vote $vote;
+
+    protected $listeners = [
+        'ratingUpdated' => 'ratingUpdated',
+    ];
 
     /**
      * Mount the component.
@@ -38,6 +43,7 @@ class VoteRating extends Component
         $this->contest      = $contest;
         $this->entry        = $entry;
         $this->ratingFactor = $ratingFactor;
+        $this->componentID  = $contest->id . '-' . $entry->id . '-' . $ratingFactor->id;
         $sessionKey         = "vote_" . $this->contest->getKey();
         $this->vote         = Session::get($sessionKey, function () use ($sessionKey) {
             $vote = Vote::create([
@@ -57,6 +63,23 @@ class VoteRating extends Component
             ->where('rating_factor_id', $this->ratingFactor->id)
             ->first()
             ->rating ?? null;
+    }
+
+    /**
+     * Update the rating.
+     *
+     * @param string  $componentID The ID of the component that updated the rating.
+     * @param integer $rating      The new rating.
+     *
+     * @return void
+     */
+    public function ratingUpdated(string $componentID, int $rating): void
+    {
+        if (
+            $this->componentID === $componentID
+        ) {
+            $this->rating = $rating;
+        }
     }
 
     /**
@@ -104,5 +127,8 @@ class VoteRating extends Component
                 'rating'           => $this->rating,
             ]);
         }
+
+        // Dispatch event so the desktop and mobile components can update the rating
+        $this->dispatch('ratingUpdated', $this->componentID, $this->rating);
     }
 }
