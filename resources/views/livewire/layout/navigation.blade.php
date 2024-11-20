@@ -27,7 +27,7 @@ new class extends Component
             <div class="flex">
                 <!-- Logo -->
                 <div class="shrink-0 flex items-center">
-                    <a href="{{ route('dashboard') }}" wire:navigate>
+                    <a href="{{ route('home') }}" wire:navigate>
                         <x-application-logo class="block h-9 w-auto fill-current text-gray-800" />
                     </a>
                 </div>
@@ -87,9 +87,11 @@ new class extends Component
     <!-- Responsive Navigation Menu -->
     <div :class="{'block': open, 'hidden': ! open}" class="hidden sm:hidden">
         <div class="pt-2 pb-3 space-y-1">
-            <x-responsive-nav-link :href="route('dashboard')" :active="request()->routeIs('dashboard')" wire:navigate>
-                {{ __('Dashboard') }}
+            <x-responsive-nav-link :href="route('home')" :active="request()->is('/')" wire:navigate>
+                {{ __('Home') }}
             </x-responsive-nav-link>
+            <x-responsive-nav-link href="/contests" :active="request()->is('contests')" wire:navigate>Contests</x-responsive-nav-link>
+            <x-responsive-nav-link href="/admin"    :active="request()->is('admin')"    wire:navigate>Admin</x-responsive-nav-link>
         </div>
 
         <!-- Responsive Settings Options -->

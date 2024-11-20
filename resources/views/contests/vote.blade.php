@@ -5,7 +5,8 @@
     <p class="mb-10"><?= $contest->description ?></p>
 
     @if ($contest->isVotingOpen())
-        <table class="mt-4">
+        <!-- Desktop View -->
+        <table class="mt-4 hidden md:block">
             <thead>
                 <tr>
                     <th>Factors</th>
@@ -37,6 +38,26 @@
                 @endforeach
             </tbody>
         </table>
+
+        <!-- Mobile View -->
+        <div class="md:hidden">
+            @foreach ($contest->entries as $entry)
+                <div class="mb-8 border-b pb-6">
+                    <h3 class="font-bold text-lg mb-2">
+                        {{ $entry->name }}
+                        @if ($contest->entry_description_display_type == 'inline' || $contest->entry_description_display_type == 'tooltip')
+                            <p class="text-sm text-gray-500">{{ $entry->description }}</p>
+                        @endif
+                    </h3>
+                    @foreach ($contest->ratingFactors as $ratingFactor)
+                        <div class="mb-4">
+                            <label class="block text-sm font-medium text-gray-700 mb-1">{{ $ratingFactor->name }}</label>
+                            <livewire:vote-rating :contest="$contest" :entry="$entry" :ratingFactor="$ratingFactor" />
+                        </div>
+                    @endforeach
+                </div>
+            @endforeach
+        </div>
     @else
         <p class="mt-4">Voting is closed for this contest.</p>
         @if (isset($contest->voting_window_opens_at) && isset($contest->voting_window_closes_at))
