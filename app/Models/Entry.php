@@ -55,11 +55,11 @@ class Entry extends Model
     public function getAverageRatingAttribute()
     {
         $total = $this->votes->reduce(function ($carry, $vote) {
-            if (!isset($vote->rating)) {
-                return $carry;
-            } else {
-                return $carry + $vote->rating;
+            $calculatedRating = $carry;
+            if (isset($vote->rating) && is_numeric($vote->rating)) {
+                $calculatedRating = $carry + $vote->rating;
             }
+            return $calculatedRating;
         }, 0);
         return $this->votes->count() ? $total / $this->votes->count() : 0;
     }

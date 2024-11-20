@@ -23,6 +23,7 @@ class User extends Authenticatable implements FilamentUser
         'name',
         'email',
         'password',
+        'timezone',
     ];
 
     /**
@@ -38,11 +39,13 @@ class User extends Authenticatable implements FilamentUser
     /**
      * Determines if the user can access the admin panel
      *
-     * @return bool
+     * @param Panel $panel The panel being accessed.
+     *
+     * @return boolean
      */
     public function canAccessPanel(Panel $panel): bool
     {
-        return str_ends_with($this->email, '@interworks.com');
+        return preg_match('/@interworks\.[a-z]+$/', $this->email) === 1;
     }
 
     /**

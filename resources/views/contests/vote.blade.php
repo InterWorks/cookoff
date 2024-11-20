@@ -4,28 +4,74 @@
     </x-slot:heading>
     <p class="mb-10"><?= $contest->description ?></p>
 
-    <table class="mt-4">
-        <thead>
-            <tr>
-                <th>Factors</th>
-                @foreach ($contest->entries as $entry)
-                    <th>{{ $entry->name }}</th>
-                @endforeach
-            </tr>
-        </thead>
-        <tbody>
-            @foreach ($contest->ratingFactors as $ratingFactor)
+    @if ($contest->isVotingOpen())
+        <table class="mt-4">
+            <thead>
                 <tr>
-                    <td>{{ $ratingFactor->name }}</td>
+                    <th>Factors</th>
                     @foreach ($contest->entries as $entry)
-                        <td>
-                            <livewire:vote-rating :contest="$contest" :entry="$entry" :ratingFactor="$ratingFactor" />
-                        </td>
+                        <th
+                            @if ($contest->entry_description_display_type == 'tooltip')
+                                title="{{ $entry->description }}"
+                            @endif>
+                            {{ $entry->name }}
+                            @if ($contest->entry_description_display_type == 'inline')
+                                <p class="text-sm text-gray-500" title="{{ $entry->description }}">
+                                    {{ Str::limit($entry->description, 30) }}
+                                </p>
+                            @endif
+                        </th>
                     @endforeach
                 </tr>
-            @endforeach
-        </tbody>
-    </table>
+            </thead>
+            <tbody>
+                @foreach ($contest->ratingFactors as $ratingFactor)
+                    <tr>
+                        <td>{{ $ratingFactor->name }}</td>
+                        @foreach ($contest->entries as $entry)
+                            <td>
+                                <livewire:vote-rating :contest="$contest" :entry="$entry" :ratingFactor="$ratingFactor" />
+                            </td>
+                        @endforeach
+                    </tr>
+                @endforeach
+            </tbody>
+        </table>
+    @else
+        <p class="mt-4">Voting is closed for this contest.</p>
+        @if (isset($contest->voting_window_opens_at) && isset($contest->voting_window_closes_at))
+            <p class="mt-4">
+                @if (now()->isBefore($contest->voting_window_opens_at))
+                    Voting will be open from
+                @else
+                    Voting was open from
+                @endif
+                <span class="timestamp font-bold" data-timestamp="{{ $contest->voting_window_opens_at->toIsoString() }}">
+                    <?= $contest->voting_window_opens_at->format('F j, Y g:i A') ?>
+                </span>
+                to
+                <span class="timestamp font-bold" data-timestamp="{{ $contest->voting_window_closes_at->toIsoString() }}">
+                    <?= $contest->voting_window_closes_at->format('F j, Y g:i A') ?>
+                </span>.
+            </p>
+        @elseif (isset($contest->voting_window_opens_at))
+            <p class="mt-4">
+                Voting starts at
+                <span class="timestamp font-bold" data-timestamp="{{ $contest->voting_window_opens_at->toIsoString() }}">
+                    <?= $contest->voting_window_opens_at->format('F j, Y g:i A') ?>
+                </span>.
+            </p>
+        @elseif (isset($contest->voting_window_closes_at))
+            <p class="mt-4">
+                Voting was open until
+                <span class="timestamp font-bold" data-timestamp="{{ $contest->voting_window_closes_at->toIsoString() }}">
+                    <?= $contest->voting_window_closes_at->format('F j, Y g:i A') ?>
+                </span>.
+            </p>
+        @else
+            <p class="mt-4">I'm unsure of the voting window.</p>
+        @endif
+    @endif
 
     <div class="mt-6">
         <a href="<?= route('contests.show', ['contest' => $contest->id]) ?>"
@@ -34,4 +80,24 @@
             See Results
         </a>
     </div>
+
+    <script>
+        document.addEventListener('DOMContentLoaded', function () {
+            const timestamps = document.querySelectorAll('.timestamp');
+            timestamps.forEach(function (timestamp) {
+                const utcDate         = new Date(timestamp.getAttribute('data-timestamp'));
+                const options         = {
+                    year        : 'numeric',
+                    month       : 'long',
+                    day         : 'numeric',
+                    hour        : 'numeric',
+                    minute      : 'numeric',
+                    timeZoneName: 'short',
+                    second      : undefined // Ensure seconds are not displayed
+                };
+                const localDate       = utcDate.toLocaleString(undefined, options);
+                timestamp.textContent = localDate;
+            });
+        });
+    </script>
 </x-layout>
