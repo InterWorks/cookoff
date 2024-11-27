@@ -28,7 +28,17 @@
             <tbody>
                 @foreach ($contest->ratingFactors as $ratingFactor)
                     <tr>
-                        <td>{{ $ratingFactor->name }}</td>
+                        <td
+                            @if ($contest->entry_description_display_type == 'tooltip')
+                                title="{{ $ratingFactor->description }}"
+                            @endif>
+                            {{ $ratingFactor->name }}
+                            @if ($contest->entry_description_display_type == 'inline')
+                                <p class="text-sm text-gray-500" title="{{ $ratingFactor->description }}">
+                                    {{ Str::limit($ratingFactor->description, 30) }}
+                                </p>
+                            @endif
+                        </td>
                         @foreach ($contest->entries as $entry)
                             <td>
                                 <livewire:vote-rating :contest="$contest" :entry="$entry" :ratingFactor="$ratingFactor" />
@@ -52,6 +62,9 @@
                     @foreach ($contest->ratingFactors as $ratingFactor)
                         <div class="mb-4">
                             <label class="block text-sm font-medium text-gray-700 mb-1">{{ $ratingFactor->name }}</label>
+                            @if ($contest->entry_description_display_type == 'inline' || $contest->entry_description_display_type == 'tooltip')
+                                <p class="text-sm text-gray-500">{{ $ratingFactor->description }}</p>
+                            @endif
                             <livewire:vote-rating :contest="$contest" :entry="$entry" :ratingFactor="$ratingFactor" />
                         </div>
                     @endforeach

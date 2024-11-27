@@ -21,9 +21,10 @@ class Contest extends Model
     use SoftDeletes;
 
     protected $fillable = [
-        'name',
         'description',
         'entry_description_display_type',
+        'name',
+        'rating_max',
         'voting_window_opens_at',
         'voting_window_closes_at',
     ];
@@ -72,6 +73,7 @@ class Contest extends Model
     public static function rules(): array
     {
         return [
+            'rating_max'              => ['required', 'integer'],
             'voting_window_opens_at'  => ['nullable', 'date', 'before_or_equal:voting_window_closes_at'],
             'voting_window_closes_at' => ['nullable', 'date', 'after_or_equal:voting_window_opens_at'],
         ];
@@ -110,6 +112,33 @@ class Contest extends Model
     }
 
     /* Accessors */
+
+    /**
+     * Get the voting window tooltip.  Can use the votingWindowTooltip magic attribute.
+     *
+     * @return string
+     */
+    public function getVotingWindowTooltipAttribute(): string
+    {
+        $timezone = config('app.timezone');
+        $isOpen   = $this->isVotingOpen();
+        if (isset($this->voting_window_opens_at) && isset($this->voting_window_closes_at)) {
+            $tooltip = $this->voting_window_opens_at
+                . ' to '
+                . $this->voting_window_closes_at
+                . ' '
+                . $timezone;
+        } elseif (isset($this->voting_window_opens_at)) {
+            $open    = $isOpen ? 'Opened' : 'Opens';
+            $tooltip = $open . ' at ' . $this->voting_window_opens_at . ' ' . $timezone;
+        } elseif (isset($this->voting_window_closes_at)) {
+            $close   = $isOpen ? 'Closes' : 'Closed';
+            $tooltip = $close . ' at ' . $this->voting_window_closes_at . ' ' . $timezone;
+        } else {
+            $tooltip = 'No voting window set';
+        }
+        return $tooltip;
+    }
 
     /**
      * Get the winning entries for this contest

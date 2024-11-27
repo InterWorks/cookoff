@@ -2,6 +2,7 @@
 
 namespace App\Models;
 
+use InvalidArgumentException;
 use App\Models\Entry;
 use App\Models\RatingFactor;
 use App\Models\Vote;
@@ -20,6 +21,28 @@ class VoteRating extends Model
         'rating_factor_id',
         'rating',
     ];
+
+    /**
+     * Boot the model
+     *
+     * @return void
+     */
+    protected static function booted(): void
+    {
+        static::creating(function ($voteRating) {
+            $maxRating = $voteRating->entry->contest->rating_max;
+            if ($voteRating->rating > $maxRating) {
+                throw new InvalidArgumentException("Rating cannot exceed contest maximum of {$maxRating}");
+            }
+        });
+
+        static::updating(function ($voteRating) {
+            $maxRating = $voteRating->entry->contest->rating_max;
+            if ($voteRating->rating > $maxRating) {
+                throw new InvalidArgumentException("Rating cannot exceed contest maximum of {$maxRating}");
+            }
+        });
+    }
 
     /**
      * Relationship to the entry this rating belongs to

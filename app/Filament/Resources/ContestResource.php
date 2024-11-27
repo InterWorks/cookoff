@@ -47,6 +47,16 @@ class ContestResource extends Resource
                         'tooltip' => 'Tooltip',
                         'inline'  => 'Inline',
                     ])
+                    ->default('hidden')
+                    ->required()
+                    ->columnSpan(1),
+                Forms\Components\Placeholder::make('spacer')
+                    ->label('')
+                    ->columnSpan(1),
+                Forms\Components\TextInput::make('rating_max')
+                    ->label('Max Rating')
+                    ->numeric()
+                    ->default(5)
                     ->columnSpan(1),
                 Forms\Components\Placeholder::make('spacer')
                     ->label('')
@@ -156,19 +166,7 @@ class ContestResource extends Resource
                     ->trueIcon('heroicon-o-check-circle')
                     ->falseIcon('heroicon-o-x-circle')
                     ->tooltip(function ($record) {
-                        if (isset($record->voting_window_opens_at) && isset($record->voting_window_closes_at)) {
-                            $tooltip = $record->voting_window_opens_at
-                                . ' to '
-                                . $record->voting_window_closes_at
-                                . ' '
-                                . config('app.timezone');
-                        } elseif (isset($record->voting_window_opens_at)) {
-                            $tooltip = 'Opens at ' . $record->voting_window_opens_at . ' ' . config('app.timezone');
-                        } elseif (isset($record->voting_window_closes_at)) {
-                            $tooltip = 'Closes at ' . $record->voting_window_closes_at . ' ' . config('app.timezone');
-                        } else {
-                            $tooltip = 'No voting window set';
-                        }
+                        $tooltip = $record->votingWindowTooltip;
                         return $tooltip;
                     }),
             ])
