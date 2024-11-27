@@ -18,7 +18,6 @@ class VoteRating extends Component
     public $entry;
     public $ratingFactor;
 
-    #[Validate('numeric')]
     public $rating = null;
 
     private Vote $vote;
@@ -26,6 +25,18 @@ class VoteRating extends Component
     protected $listeners = [
         'ratingUpdated' => 'ratingUpdated',
     ];
+
+    /**
+     * The validation rules.
+     *
+     * @return array
+     */
+    public function rules(): array
+    {
+        return [
+            'rating' => 'numeric|min:0|max:' . $this->contest->rating_max,
+        ];
+    }
 
     /**
      * Mount the component.
