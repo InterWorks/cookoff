@@ -4,24 +4,26 @@
     </x-slot:heading>
 
     @foreach ($contests as $contest)
-        <div class="mt-4 block px-4 py-6 border border-gray-200 rounded-lg">
-            @if ($contest->isVotingOpen())
-                <span class="inline-flex items-center rounded-md bg-green-50 px-2 py-1 text-xs font-medium text-green-700 ring-1 ring-inset ring-green-600/20"
-                    title="{{ $contest->votingWindowTooltip }}">
-                    Voting Open
-                </span>
-            @else
-                <span class="inline-flex items-center rounded-md bg-gray-50 px-2 py-1 text-xs font-medium text-gray-600 ring-1 ring-inset ring-gray-500/10"
-                    title="{{ $contest->votingWindowTooltip }}">
-                    Voting Closed
-                </span>
-            @endif
-            <h2 class="text-3xl font-semibold">
-                <a href="{{ route('contests.show', ['contest' => $contest->id]) }}"
-                    class="hover:underline"
-                    wire:navigate>{{ $contest->name }}</a>
-            </h2>
-            <p class="text-lg">{{ $contest->description }}</p>
-        </div>
+        <a href="{{ route('contests.show', ['contest' => $contest->id]) }}" class="group dark:text-white-500" wire:navigate>
+            <flux:card class="mt-4 space-y-6">
+                <flux:heading size="lg">
+                    <div class="flex justify-between decoration-inherit">
+                        <span class="group-hover:underline">{{ $contest->name }}</span>
+                        @if ($contest->isVotingOpen())
+                            <flux:badge color="lime" title="{{ $contest->votingWindowTooltip }}" inset="top bottom">
+                                Voting Open
+                            </flux:badge>
+                        @else
+                            <flux:badge title="{{ $contest->votingWindowTooltip }}" inset="top bottom">
+                                Voting Closed
+                            </flux:badge>
+                        @endif
+                    </div>
+                </flux:heading>
+                <flux:subheading class="">
+                    {{ $contest->description }}
+                </flux:subheading>
+            </flux:card>
+        </a>
     @endforeach
 </x-layout>

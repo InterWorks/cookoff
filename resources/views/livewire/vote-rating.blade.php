@@ -1,37 +1,33 @@
 
+@props(['mode' => 'Default'])
+
 <div>
     <form onsubmit="return false;">
-        <div wire:key="{{ $componentID }}" class="relative">
-            <input type="text"
-                wire:model.live.debounce="rating"
+        <flux:field>
+            <flux:input :title="$entry->name . ' and ' . $ratingFactor->name"
+                type="text"
+                :class="$mode == 'Desktop' ? 'rating-input' : ''"
+                placeholder="Enter your rating"
+                wire:model="rating"
                 wire:change="updateRating"
                 wire:target="updateRating"
                 wire:loading.class="bg-yellow-100"
-                class="form-control rating-input @error('rating') bg-red-100 border-red-500 @enderror"
-                placeholder="Enter your rating">
-            <span wire:target="updateRating"
-                wire:loading.class="inline-block"
-                wire:loading.class.remove="hidden"
-                class="bg-yellow-100 hidden absolute right-3 top-1/2 transform -translate-y-1/2">
-                <svg class="inline-block h-5 w-5 text-gray-500 animate-spin"
-                    xmlns="http://www.w3.org/2000/svg"
-                    fill="none"
-                    viewBox="0 0 24 24"
-                    stroke="currentColor">
-                    <path stroke-linecap="round"
-                        stroke-linejoin="round"
-                        stroke-width="2"
-                        d="M4.5 12a7.5 7.5 0 017.5-7.5V3m0 18v-1.5a7.5 7.5 0 007.5-7.5H21" />
-                </svg>
-            </span>
-            <span class="text-red-500">@error('rating'){{ $message }}@enderror</span>
-        </div>
+            >
+                <x-slot name="iconTrailing">
+                    <flux:icon.loading wire:target="updateRating" wire:loading />
+                    @error('rating')
+                        <flux:icon.exclamation-triangle class="text-red-500"/>
+                    @enderror
+                </x-slot>
+            </flux:input>
+            <flux:error name="rating" />
+        </flux:field>
     </form>
 </div>
 
 <script>
     document.addEventListener('DOMContentLoaded', function () {
-        const inputs = document.querySelectorAll('.rating-input');
+        const inputs = document.querySelectorAll('.rating-input input');
         inputs.forEach((input, index) => {
             input.addEventListener('keydown', function (event) {
                 if (event.key === 'Enter') {
