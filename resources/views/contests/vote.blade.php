@@ -1,72 +1,81 @@
-<x-layout>
+<x-layout :fullWidth="$contest->isVotingOpen()">
     <x-slot:heading>
         Vote in <?= $contest->name ?>
     </x-slot:heading>
-    <p class="mb-10"><?= $contest->description ?></p>
+    <x-slot:subheading>
+        <?= $contest->description ?>
+    </x-slot:subheading>
+    <x-slot:breadcrumbs>
+        <flux:breadcrumbs.item icon="home" title="Home" :href="route('home')" wire:navigate>Home</flux:breadcrumbs.item>
+        <flux:breadcrumbs.item :href="route('contests.index')" wire:navigate>Contests</flux:breadcrumbs.item>
+        <flux:breadcrumbs.item :href="route('contests.show', ['contest' => $contest->id])" wire:navigate><?= $contest->name ?></flux:breadcrumbs.item>
+        <flux:breadcrumbs.item active>Vote</flux:breadcrumbs.item>
+    </x-slot:breadcrumbs>
 
     @if ($contest->isVotingOpen())
         <!-- Desktop View -->
-        <table class="mt-4 hidden md:block">
-            <thead>
-                <tr>
-                    <th>Factors</th>
-                    @foreach ($contest->entries as $entry)
-                        <th
-                            @if ($contest->entry_description_display_type == 'tooltip')
-                                title="{{ $entry->description }}"
-                            @endif>
-                            {{ $entry->name }}
-                            @if ($contest->entry_description_display_type == 'inline')
-                                <p class="text-sm text-gray-500" title="{{ $entry->description }}">
-                                    {{ Str::limit($entry->description, 30) }}
-                                </p>
-                            @endif
-                        </th>
-                    @endforeach
-                </tr>
-            </thead>
-            <tbody>
+        <flux:table class="hidden lg:table">
+            <flux:columns>
+                <flux:column>Factors</flux:column>
+                @foreach ($contest->entries as $entry)
+                    @if ($contest->entry_description_display_type == 'tooltip')
+                        $tooltip = $entry->description;
+                    @else
+                        $tooltip = null;
+                    @endif
+                    <flux:column :title="$tooltip">
+                        {{ $entry->name }}
+                        @if ($contest->entry_description_display_type == 'inline')
+                            <p class="text-sm text-gray-500" title="{{ $entry->description }}">
+                                {{ Str::limit($entry->description, 30) }}
+                            </p>
+                        @endif
+                    </flux:column>
+                @endforeach
+            </flux:columns>
+            <flux:rows>
                 @foreach ($contest->ratingFactors as $ratingFactor)
-                    <tr>
-                        <td
-                            @if ($contest->entry_description_display_type == 'tooltip')
-                                title="{{ $ratingFactor->description }}"
-                            @endif>
+                    <flux:row :key="$ratingFactor->id">
+                        @if ($contest->entry_description_display_type == 'tooltip')
+                            $tooltip = $ratingFactor->description;
+                        @else
+                            $tooltip = null;
+                        @endif
+                        ?>
+                        <flux:cell :title="$tooltip" class="!pl-1">
                             {{ $ratingFactor->name }}
                             @if ($contest->entry_description_display_type == 'inline')
                                 <p class="text-sm text-gray-500" title="{{ $ratingFactor->description }}">
                                     {{ Str::limit($ratingFactor->description, 30) }}
                                 </p>
                             @endif
-                        </td>
+                        </flux:cell>
                         @foreach ($contest->entries as $entry)
-                            <td>
-                                <livewire:vote-rating :contest="$contest" :entry="$entry" :ratingFactor="$ratingFactor" />
-                            </td>
+                            <flux:cell>
+                                <livewire:vote-rating :contest="$contest" :entry="$entry" :ratingFactor="$ratingFactor" mode="Desktop"/>
+                            </flux:cell>
                         @endforeach
-                    </tr>
+                    </flux:row>
                 @endforeach
-            </tbody>
-        </table>
+            </flux:rows>
+        </flux:table>
 
         <!-- Mobile View -->
-        <div class="md:hidden">
+        <div class="mt-8 lg:hidden">
             @foreach ($contest->entries as $entry)
                 <div class="mb-8 border-b pb-6">
-                    <h3 class="font-bold text-lg mb-2">
-                        {{ $entry->name }}
-                        @if ($contest->entry_description_display_type == 'inline' || $contest->entry_description_display_type == 'tooltip')
-                            <p class="text-sm text-gray-500">{{ $entry->description }}</p>
-                        @endif
-                    </h3>
+                    <flux:heading size="lg">{{ $entry->name }}</flux:heading>
+                    @if ($contest->entry_description_display_type == 'inline' || $contest->entry_description_display_type == 'tooltip')
+                        <flux:subheading>{{ $entry->description }}</flux:subheading>
+                    @endif
                     @foreach ($contest->ratingFactors as $ratingFactor)
-                        <div class="mb-4">
-                            <label class="block text-sm font-medium text-gray-700 mb-1">{{ $ratingFactor->name }}</label>
+                        <flux:field class="mb-4 mt-4">
+                            <flux:label>{{ $ratingFactor->name }}</flux:label>
                             @if ($contest->entry_description_display_type == 'inline' || $contest->entry_description_display_type == 'tooltip')
-                                <p class="text-sm text-gray-500">{{ $ratingFactor->description }}</p>
+                                <flux:description>{{ $ratingFactor->description }}</flux:description>
                             @endif
-                            <livewire:vote-rating :contest="$contest" :entry="$entry" :ratingFactor="$ratingFactor" />
-                        </div>
+                            <livewire:vote-rating :contest="$contest" :entry="$entry" :ratingFactor="$ratingFactor" :mode="'Mobile'" />
+                        </flux:field>
                     @endforeach
                 </div>
             @endforeach
@@ -107,13 +116,7 @@
         @endif
     @endif
 
-    <div class="mt-6">
-        <a href="<?= route('contests.show', ['contest' => $contest->id]) ?>"
-            class="hover:underline"
-            wire:navigate>
-            See Results
-        </a>
-    </div>
+    <flux:button :href="route('contests.show', ['contest' => $contest->id])" class="mt-4">See Results</flux:button>
 
     <script>
         document.addEventListener('DOMContentLoaded', function () {
