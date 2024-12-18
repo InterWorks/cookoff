@@ -18,11 +18,13 @@
             <flux:columns>
                 <flux:column>Factors</flux:column>
                 @foreach ($contest->entries as $entry)
-                    @if ($contest->entry_description_display_type == 'tooltip')
-                        $tooltip = $entry->description;
-                    @else
-                        $tooltip = null;
-                    @endif
+                    @php
+                        if ($contest->entry_description_display_type == 'tooltip'):
+                            $tooltip = $entry->description;
+                        else:
+                            $tooltip = null;
+                        endif;
+                    @endphp
                     <flux:column :title="$tooltip">
                         {{ $entry->name }}
                         @if ($contest->entry_description_display_type == 'inline')
@@ -36,11 +38,13 @@
             <flux:rows>
                 @foreach ($contest->ratingFactors as $ratingFactor)
                     <flux:row :key="$ratingFactor->id">
-                        @if ($contest->entry_description_display_type == 'tooltip')
-                            $tooltip = $ratingFactor->description;
-                        @else
-                            $tooltip = null;
-                        @endif
+                        @php
+                            if ($contest->entry_description_display_type == 'tooltip'):
+                                $tooltip = $ratingFactor->description;
+                            else:
+                                $tooltip = null;
+                            endif;
+                        @endphp
                         <flux:cell :title="$tooltip" class="!pl-1">
                             {{ $ratingFactor->name }}
                             @if ($contest->entry_description_display_type == 'inline')
