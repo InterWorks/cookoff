@@ -41,7 +41,6 @@
                         @else
                             $tooltip = null;
                         @endif
-                        ?>
                         <flux:cell :title="$tooltip" class="!pl-1">
                             {{ $ratingFactor->name }}
                             @if ($contest->entry_description_display_type == 'inline')
