@@ -62,6 +62,8 @@ class Contest extends Model
                     ->setTimezone('UTC')
                     ->format('Y-m-d H:i:s');
             }
+
+            $model->ensureAllVotesHaveRatings();
         });
     }
 
@@ -206,5 +208,40 @@ class Contest extends Model
         }
 
         return $isOpen;
+    }
+
+    /* Utilities */
+
+    /**
+     * Ensure all votes have ratings for all entries and rating factors
+     *
+     * @return void
+     */
+    public function ensureAllVotesHaveRatings(): void
+    {
+        $entries       = $this->entries;
+        $ratingFactors = $this->ratingFactors;
+        $votes         = $this->votes;
+
+        // If there's not a vote rating for the vote, entry, and rating factor, create one with the rating of 0.
+        foreach ($votes as $vote) {
+            foreach ($entries as $entry) {
+                foreach ($ratingFactors as $ratingFactor) {
+                    $voteRating = $vote->voteRatings()
+                        ->where('entry_id', $entry->id)
+                        ->where('rating_factor_id', $ratingFactor->id)
+                        ->first();
+                    if (!isset($voteRating)) {
+                        // Create a new vote rating with a rating of 0
+                        $vote->voteRatings()->create([
+                            'entry_id'         => $entry->id,
+                            'rating_factor_id' => $ratingFactor->id,
+                            'rating'           => 0,
+                        ]);
+                    }
+                }
+            }
+            $vote->refreshSummary();
+        }
     }
 }
