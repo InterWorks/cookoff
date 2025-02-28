@@ -248,7 +248,6 @@ class Contest extends Model
             $hasAtLeastOneRating = false;
             foreach ($vote->voteRatings as $voteRating) {
                 if (!empty($voteRating->rating)) {
-                    dd('Keeping vote', $vote->id, $voteRating);
                     $hasAtLeastOneRating = true;
                     break;
                 }
