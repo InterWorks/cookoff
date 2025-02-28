@@ -72,32 +72,35 @@ class Vote extends Model
      */
     public function refreshSummary(): void
     {
+        $summaryJSON = $this->summary ?? "[]";
+        $summary     = json_decode($summaryJSON, true);
         foreach ($this->contest->entries as $entry) {
             $entrySum     = 0;
             $hasAnyRating = false;
             foreach ($this->contest->ratingFactors as $ratingFactor) {
-                $rating = $this->voteRatings()
+                $voteRating = $this->voteRatings()
                     ->where('entry_id', $entry->id)
                     ->where('rating_factor_id', $ratingFactor->id)
-                    ->first()
-                    ->rating ?? null;
+                    ->first();
+                $rating     = $voteRating->rating ?? null;
 
                 if (isset($rating)) {
                     $entrySum    += $rating;
                     $hasAnyRating = true;
                 }
 
-                $this->summary[$entry->id][$ratingFactor->id] = $rating;
+                $summary[$entry->id][$ratingFactor->id] = $rating;
             }
 
             // If there are no ratings, set the total to null so it doesn't affect the average
-            if ($hasAnyRating) {
+            if (!$hasAnyRating) {
                 $entrySum = null;
             }
 
             // Save the total
-            $this->summary[$entry->id]['total'] = $entrySum;
+            $summary[$entry->id]['total'] = $entrySum;
         }
+        $this->summary = $summary;
         $this->save();
     }
 }
