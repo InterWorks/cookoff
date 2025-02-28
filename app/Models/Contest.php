@@ -242,6 +242,20 @@ class Contest extends Model
                 }
             }
             $vote->refreshSummary();
+
+            // Verify that the vote has at least one rating, delete it if it doesn't.
+            $vote->refresh();
+            $hasAtLeastOneRating = false;
+            foreach ($vote->voteRatings as $voteRating) {
+                if (!empty($voteRating->rating)) {
+                    $hasAtLeastOneRating = true;
+                    break;
+                }
+            }
+            if (!$hasAtLeastOneRating) {
+                $vote->voteRatings()->delete();
+                $vote->delete();
+            }
         }
     }
 }
