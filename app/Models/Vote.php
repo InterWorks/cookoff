@@ -16,7 +16,7 @@ class Vote extends Model
     use HasFactory;
 
     /** @use SoftDeletes */
-    use SoftDeletes;
+    // use SoftDeletes;
 
     protected $fillable = [
         'contest_id',
