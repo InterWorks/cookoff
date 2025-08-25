@@ -36,11 +36,11 @@ class Entry extends Model
     }
 
     /**
-     * Relationship to the votes for this entry
+     * Relationship to the vote ratings for this entry
      *
      * @return HasMany
      */
-    public function votes(): HasMany
+    public function voteRatings(): HasMany
     {
         return $this->hasMany(VoteRating::class);
     }
@@ -54,13 +54,13 @@ class Entry extends Model
      */
     public function getAverageRatingAttribute()
     {
-        $total = $this->votes->reduce(function ($carry, $vote) {
+        $total = $this->voteRatings->reduce(function ($carry, $voteRating) {
             $calculatedRating = $carry;
-            if (isset($vote->rating) && is_numeric($vote->rating)) {
-                $calculatedRating = $carry + $vote->rating;
+            if (isset($voteRating->rating) && is_numeric($voteRating->rating)) {
+                $calculatedRating = $carry + $voteRating->rating;
             }
             return $calculatedRating;
         }, 0);
-        return $this->votes->count() ? $total / $this->votes->count() : 0;
+        return $this->voteRatings->count() ? $total / $this->voteRatings->count() : 0;
     }
 }
