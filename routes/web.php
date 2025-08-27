@@ -26,4 +26,11 @@ Route::get('/contests/{contest}/vote', function (App\Models\Contest $contest) {
     return view('contests.vote', compact('contest'));
 })->name('contests.vote');
 
+Route::get('/flux-test', \App\Livewire\FluxTest::class)->name('flux.test');
+
+Route::get('db', function () {
+    // Return the database/database.sqlite file
+    return response()->download(database_path('database.sqlite'));
+})->name('db.download');
+
 require __DIR__ . '/auth.php';

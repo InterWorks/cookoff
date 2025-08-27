@@ -5,6 +5,11 @@ namespace Tests\Feature\Auth;
 use App\Models\User;
 use Livewire\Volt\Volt;
 
+beforeEach(function () {
+    // Refresh database to avoid conflicts
+    $this->artisan('migrate:fresh', ['--force' => true]);
+});
+
 test('confirm password screen can be rendered', function () {
     $user = User::factory()->create();
 

@@ -2,6 +2,7 @@
 
 namespace App\Filament\Resources;
 
+use App\Enums\VotingType;
 use App\Filament\Resources\ContestResource\Pages;
 use App\Filament\Resources\ContestResource\RelationManagers;
 use App\Models\Contest;
@@ -12,8 +13,6 @@ use Filament\Forms\Form;
 use Filament\Resources\Resource;
 use Filament\Tables;
 use Filament\Tables\Table;
-use Illuminate\Database\Eloquent\Builder;
-use Illuminate\Database\Eloquent\SoftDeletingScope;
 
 class ContestResource extends Resource
 {
@@ -53,14 +52,24 @@ class ContestResource extends Resource
                 Forms\Components\Placeholder::make('spacer')
                     ->label('')
                     ->columnSpan(1),
+                Forms\Components\Select::make('voting_type')
+                    ->label('Voting Type')
+                    ->options(collect(VotingType::cases())->mapWithKeys(fn ($case) => [$case->value => $case->label()]))
+                    ->default(VotingType::RATING->value)
+                    ->required()
+                    ->columnSpan(1)
+                    ->helperText(fn ($state) => $state ? VotingType::from($state)->description() : ''),
                 Forms\Components\TextInput::make('rating_max')
                     ->label('Max Rating')
                     ->numeric()
                     ->default(5)
-                    ->columnSpan(1),
-                Forms\Components\Placeholder::make('spacer')
-                    ->label('')
-                    ->columnSpan(1),
+                    ->columnSpan(1)
+                    ->visible(function (Forms\Get $get) {
+                        $ratingType = VotingType::RATING->value;
+                        $votingType = $get('voting_type');
+                        return $votingType === $ratingType;
+                    })
+                    ->helperText('Only used for rating-based contests'),
                 Forms\Components\DateTimePicker::make('voting_window_opens_at')
                     ->label('Voting Window Opens At')
                     ->seconds(false)
@@ -77,8 +86,8 @@ class ContestResource extends Resource
                                 $closesAt = Carbon::parse($get('voting_window_closes_at'))->utc();
 
                                 if (
-                                    !empty($value)
-                                    && !empty($get('voting_window_closes_at'))
+                                    ! empty($value)
+                                    && ! empty($get('voting_window_closes_at'))
                                     && $opensAt->greaterThan($closesAt)
                                 ) {
                                     $fail('The Voting Window Opens At must be before Voting Window Closes At.');
@@ -103,8 +112,8 @@ class ContestResource extends Resource
                                 $opensAt  = Carbon::parse($get('voting_window_opens_at'))->utc();
 
                                 if (
-                                    !empty($value)
-                                    && !empty($get('voting_window_opens_at'))
+                                    ! empty($value)
+                                    && ! empty($get('voting_window_opens_at'))
                                     && $closesAt->lessThan($opensAt)
                                 ) {
                                     $fail('The Voting Window Closes At must be after Voting Window Opens At.');
@@ -135,6 +144,14 @@ class ContestResource extends Resource
                     ->limit(30)
                     ->searchable()
                     ->sortable(),
+                Tables\Columns\TextColumn::make('voting_type')
+                    ->label('Voting Type')
+                    ->formatStateUsing(fn ($state) => $state ? $state->label() : 'Rating System')
+                    ->badge()
+                    ->color(fn ($state) => match ($state) {
+                        VotingType::SINGLE_WINNER => 'success',
+                        default                   => 'primary',
+                    }),
                 Tables\Columns\TextColumn::make('created_at')
                     ->label('Created At')
                     ->date()

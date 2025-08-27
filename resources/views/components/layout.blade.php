@@ -15,7 +15,8 @@
 
         <!-- Styles -->
         @vite(['resources/css/app.css', 'resources/js/app.js'])
-        @fluxStyles
+        @fluxAppearance
+        @livewireStyles
 
         <link rel="icon" href="{{ Vite::asset('resources/images/iw_logo.svg') }}" type="image/svg+xml">
     </head>
@@ -101,6 +102,12 @@
             @endif
             {{ $slot }}
         </flux:main>
-        @fluxScripts
+
+        @livewireScripts
+
+        <!-- Manual Flux scripts -->
+        <script>
+        {!! file_get_contents(base_path('vendor/livewire/flux/dist/flux.min.js')) !!}
+        </script>
     </body>
 </html>

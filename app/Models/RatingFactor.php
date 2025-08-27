@@ -16,6 +16,7 @@ class RatingFactor extends Model
     use SoftDeletes;
 
     protected $fillable = [
+        'contest_id',
         'name',
         'description',
     ];

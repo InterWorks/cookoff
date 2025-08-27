@@ -5,6 +5,11 @@ use Illuminate\Auth\Events\Verified;
 use Illuminate\Support\Facades\Event;
 use Illuminate\Support\Facades\URL;
 
+beforeEach(function () {
+    // Refresh database to avoid conflicts
+    $this->artisan('migrate:fresh', ['--force' => true]);
+});
+
 test('email verification screen can be rendered', function () {
     $user = User::factory()->unverified()->create();
 

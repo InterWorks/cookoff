@@ -2,8 +2,6 @@
 
 namespace App\Models;
 
-use App\Models\Contest;
-use App\Models\VoteRating;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
@@ -51,15 +49,15 @@ class Vote extends Model
     /**
      * Get the average rating for this entry
      *
-     * @param integer $entryId The ID of the entry to get the average rating for.
-     *
-     * @return float
+     * @param  integer $entryId The ID of the entry to get the average rating for.
+     * @return float|null
      */
     public function getEntryTotalRating(int $entryId): float
     {
-        if (!isset($this->summary[$entryId]['total'])) {
+        if (! isset($this->summary[$entryId]['total'])) {
             $this->refreshSummary();
         }
+
         return $this->summary[$entryId]['total'] ?? null;
     }
 
@@ -72,8 +70,7 @@ class Vote extends Model
      */
     public function refreshSummary(): void
     {
-        $summaryJSON = $this->summary ?? "[]";
-        $summary     = json_decode($summaryJSON, true);
+        $summary = is_array($this->summary) ? $this->summary : json_decode($this->summary ?? '[]', true);
         foreach ($this->contest->entries as $entry) {
             $entrySum     = 0;
             $hasAnyRating = false;
@@ -93,7 +90,7 @@ class Vote extends Model
             }
 
             // If there are no ratings, set the total to null so it doesn't affect the average
-            if (!$hasAnyRating) {
+            if (! $hasAnyRating) {
                 $entrySum = null;
             }
 

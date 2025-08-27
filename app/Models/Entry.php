@@ -2,8 +2,7 @@
 
 namespace App\Models;
 
-use App\Models\Contest;
-use App\Models\VoteRating;
+use App\Enums\VotingType;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
@@ -19,6 +18,7 @@ class Entry extends Model
     use SoftDeletes;
 
     protected $fillable = [
+        'contest_id',
         'name',
         'description',
     ];
@@ -54,13 +54,25 @@ class Entry extends Model
      */
     public function getAverageRatingAttribute()
     {
+        // For single-winner contests, only count non-zero ratings
+        if ($this->contest->voting_type === VotingType::SINGLE_WINNER) {
+            $nonZeroRatings = $this->voteRatings->filter(function ($voteRating) {
+                return isset($voteRating->rating) && is_numeric($voteRating->rating) && $voteRating->rating > 0;
+            });
+
+            return (float) $nonZeroRatings->sum('rating');
+        }
+
+        // For rating contests, use traditional average calculation
         $total = $this->voteRatings->reduce(function ($carry, $voteRating) {
             $calculatedRating = $carry;
             if (isset($voteRating->rating) && is_numeric($voteRating->rating)) {
                 $calculatedRating = $carry + $voteRating->rating;
             }
+
             return $calculatedRating;
         }, 0);
+
         return $this->voteRatings->count() ? $total / $this->voteRatings->count() : 0;
     }
 }
