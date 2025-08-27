@@ -6,6 +6,11 @@ use App\Models\User;
 use Illuminate\Support\Facades\Hash;
 use Livewire\Volt\Volt;
 
+beforeEach(function () {
+    // Refresh database to avoid conflicts
+    $this->artisan('migrate:fresh', ['--force' => true]);
+});
+
 test('password can be updated', function () {
     $user = User::factory()->create();
 

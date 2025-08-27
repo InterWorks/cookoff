@@ -7,6 +7,11 @@ use Illuminate\Auth\Notifications\ResetPassword;
 use Illuminate\Support\Facades\Notification;
 use Livewire\Volt\Volt;
 
+beforeEach(function () {
+    // Refresh database to avoid conflicts
+    $this->artisan('migrate:fresh', ['--force' => true]);
+});
+
 test('reset password link screen can be rendered', function () {
     $response = $this->get('/forgot-password');
 

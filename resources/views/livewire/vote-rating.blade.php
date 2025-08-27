@@ -15,6 +15,11 @@
             >
                 <x-slot name="iconTrailing">
                     <flux:icon.loading wire:target="updateRating" wire:loading />
+                    @if($saveStatus === 'success')
+                        <flux:icon.check class="text-green-500" wire:loading.remove wire:target="updateRating" />
+                    @elseif($saveStatus === 'error')
+                        <flux:icon.exclamation-triangle class="text-red-500" wire:loading.remove wire:target="updateRating" />
+                    @endif
                     @error('rating')
                         <flux:icon.exclamation-triangle class="text-red-500"/>
                     @enderror

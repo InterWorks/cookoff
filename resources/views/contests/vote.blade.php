@@ -13,74 +13,82 @@
     </x-slot:breadcrumbs>
 
     @if ($contest->isVotingOpen())
-        <!-- Desktop View -->
-        <flux:table class="hidden lg:table">
-            <flux:columns>
-                <flux:column>Factors</flux:column>
-                @foreach ($contest->entries as $entry)
-                    @php
-                        $tooltip = null;
-                        if ($contest->entry_description_display_type == 'tooltip') {
-                            $tooltip = $entry->description;
-                        }
-                    @endphp
-                    <flux:column :title="$tooltip">
-                        {{ $entry->name }}
-                        @if ($contest->entry_description_display_type == 'inline')
-                            <p class="text-sm text-gray-500" title="{{ $entry->description }}">
-                                {{ Str::limit($entry->description, 30) }}
-                            </p>
-                        @endif
-                    </flux:column>
-                @endforeach
-            </flux:columns>
-            <flux:rows>
-                @foreach ($contest->ratingFactors as $ratingFactor)
-                    <flux:row :key="$ratingFactor->id">
+        @if($contest->voting_type === \App\Enums\VotingType::SINGLE_WINNER)
+            <!-- Single Winner Voting -->
+            <div class="mt-8">
+                <livewire:single-winner-vote :contest="$contest" />
+            </div>
+        @else
+            <!-- Rating System Voting -->
+            <!-- Desktop View -->
+            <flux:table class="hidden lg:table">
+                <flux:table.columns>
+                    <flux:table.column>Factors</flux:table.column>
+                    @foreach ($contest->entries as $entry)
                         @php
                             $tooltip = null;
                             if ($contest->entry_description_display_type == 'tooltip') {
                                 $tooltip = $entry->description;
                             }
                         @endphp
-                        <flux:cell :title="$tooltip" class="!pl-1">
-                            {{ $ratingFactor->name }}
+                        <flux:table.column :title="$tooltip">
+                            {{ $entry->name }}
                             @if ($contest->entry_description_display_type == 'inline')
-                                <p class="text-sm text-gray-500" title="{{ $ratingFactor->description }}">
-                                    {{ Str::limit($ratingFactor->description, 30) }}
+                                <p class="text-sm text-gray-500" title="{{ $entry->description }}">
+                                    {{ Str::limit($entry->description, 30) }}
                                 </p>
                             @endif
-                        </flux:cell>
-                        @foreach ($contest->entries as $entry)
-                            <flux:cell>
-                                <livewire:vote-rating :contest="$contest" :entry="$entry" :ratingFactor="$ratingFactor" mode="Desktop"/>
-                            </flux:cell>
-                        @endforeach
-                    </flux:row>
-                @endforeach
-            </flux:rows>
-        </flux:table>
-
-        <!-- Mobile View -->
-        <div class="mt-8 lg:hidden">
-            @foreach ($contest->entries as $entry)
-                <div class="mb-8 border-b pb-6">
-                    <flux:heading size="lg">{{ $entry->name }}</flux:heading>
-                    @if ($contest->entry_description_display_type == 'inline' || $contest->entry_description_display_type == 'tooltip')
-                        <flux:subheading>{{ $entry->description }}</flux:subheading>
-                    @endif
-                    @foreach ($contest->ratingFactors as $ratingFactor)
-                        <flux:field class="mb-4 mt-4">
-                            <flux:label>{{ $ratingFactor->name }}</flux:label>
-                            @if ($contest->entry_description_display_type == 'inline' || $contest->entry_description_display_type == 'tooltip')
-                                <flux:description>{{ $ratingFactor->description }}</flux:description>
-                            @endif
-                            <livewire:vote-rating :contest="$contest" :entry="$entry" :ratingFactor="$ratingFactor" :mode="'Mobile'" />
-                        </flux:field>
+                        </flux:table.column>
                     @endforeach
-                </div>
-            @endforeach
-        </div>
+                </flux:table.columns>
+                <flux:table.rows>
+                    @foreach ($contest->ratingFactors as $ratingFactor)
+                        <flux:table.row :key="$ratingFactor->id">
+                            @php
+                                $tooltip = null;
+                                if ($contest->entry_description_display_type == 'tooltip') {
+                                    $tooltip = $entry->description;
+                                }
+                            @endphp
+                            <flux:table.cell :title="$tooltip" class="!pl-1">
+                                {{ $ratingFactor->name }}
+                                @if ($contest->entry_description_display_type == 'inline')
+                                    <p class="text-sm text-gray-500" title="{{ $ratingFactor->description }}">
+                                        {{ Str::limit($ratingFactor->description, 30) }}
+                                    </p>
+                                @endif
+                            </flux:table.cell>
+                            @foreach ($contest->entries as $entry)
+                                <flux:table.cell>
+                                    <livewire:vote-rating :contest="$contest" :entry="$entry" :ratingFactor="$ratingFactor" mode="Desktop"/>
+                                </flux:table.cell>
+                            @endforeach
+                        </flux:table.row>
+                    @endforeach
+                </flux:table.rows>
+            </flux:table>
+
+            <!-- Mobile View -->
+            <div class="mt-8 lg:hidden">
+                @foreach ($contest->entries as $entry)
+                    <div class="mb-8 border-b pb-6">
+                        <flux:heading size="lg">{{ $entry->name }}</flux:heading>
+                        @if ($contest->entry_description_display_type == 'inline' || $contest->entry_description_display_type == 'tooltip')
+                            <flux:subheading>{{ $entry->description }}</flux:subheading>
+                        @endif
+                        @foreach ($contest->ratingFactors as $ratingFactor)
+                            <flux:field class="mb-4 mt-4">
+                                <flux:label>{{ $ratingFactor->name }}</flux:label>
+                                @if ($contest->entry_description_display_type == 'inline' || $contest->entry_description_display_type == 'tooltip')
+                                    <flux:description>{{ $ratingFactor->description }}</flux:description>
+                                @endif
+                                <livewire:vote-rating :contest="$contest" :entry="$entry" :ratingFactor="$ratingFactor" :mode="'Mobile'" />
+                            </flux:field>
+                        @endforeach
+                    </div>
+                @endforeach
+            </div>
+        @endif
     @else
         <p class="mt-4">Voting is closed for this contest.</p>
         @if (isset($contest->voting_window_opens_at) && isset($contest->voting_window_closes_at))

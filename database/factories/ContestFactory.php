@@ -2,6 +2,7 @@
 
 namespace Database\Factories;
 
+use App\Enums\VotingType;
 use Illuminate\Database\Eloquent\Factories\Factory;
 
 /**
@@ -20,6 +21,8 @@ class ContestFactory extends Factory
             'name'                           => $this->faker->city . ' ' . $this->faker->year . ' Cook-off',
             'description'                    => $this->faker->text,
             'entry_description_display_type' => $this->faker->randomElement(['hidden', 'tooltip', 'inline']),
+            'voting_type'                    => VotingType::RATING,
+            'rating_max'                     => 10,
         ];
     }
 }

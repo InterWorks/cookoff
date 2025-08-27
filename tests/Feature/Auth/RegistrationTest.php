@@ -4,6 +4,10 @@ namespace Tests\Feature\Auth;
 
 use Livewire\Volt\Volt;
 
+beforeEach(function () {
+    $this->artisan('migrate:fresh', ['--force' => true]);
+});
+
 test('registration screen can be rendered', function () {
     $response = $this->get('/register');
 

@@ -3,6 +3,11 @@
 use App\Models\User;
 use Livewire\Volt\Volt;
 
+beforeEach(function () {
+    // Refresh database to avoid conflicts
+    $this->artisan('migrate:fresh', ['--force' => true]);
+});
+
 test('profile page is displayed', function () {
     $user = User::factory()->create();
 

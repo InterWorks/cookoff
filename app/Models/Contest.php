@@ -2,10 +2,7 @@
 
 namespace App\Models;
 
-use Exception;
-use App\Models\Entry;
-use App\Models\RatingFactor;
-use App\Models\Vote;
+use App\Enums\VotingType;
 use Carbon\Carbon;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
@@ -25,6 +22,7 @@ class Contest extends Model
         'entry_description_display_type',
         'name',
         'rating_max',
+        'voting_type',
         'voting_window_opens_at',
         'voting_window_closes_at',
     ];
@@ -35,6 +33,7 @@ class Contest extends Model
     ];
 
     protected $casts = [
+        'voting_type'             => VotingType::class,
         'voting_window_opens_at'  => 'datetime',
         'voting_window_closes_at' => 'datetime',
     ];
@@ -47,6 +46,11 @@ class Contest extends Model
     protected static function boot(): void
     {
         parent::boot();
+
+        // Skip all boot logic during testing to avoid console prompts
+        if (app()->bound('env') && app('env') === 'testing') {
+            return;
+        }
 
         static::saving(function ($model) {
             $timezone = config('app.timezone');
@@ -139,14 +143,14 @@ class Contest extends Model
         } else {
             $tooltip = 'No voting window set';
         }
+
         return $tooltip;
     }
 
     /**
      * Get the winning entries for this contest
      *
-     * @param integer $numberOfEntriesToInclude The number of winning entries to include. Default is 3.
-     *
+     * @param  integer $numberOfEntriesToInclude The number of winning entries to include. Default is 3.
      * @return array
      */
     public function getWinningEntries(int $numberOfEntriesToInclude = 3)
@@ -176,6 +180,7 @@ class Contest extends Model
                 $winners[$place . $suffix] = $detail;
             }
         }
+
         return $winners;
     }
 
@@ -231,7 +236,7 @@ class Contest extends Model
                         ->where('entry_id', $entry->id)
                         ->where('rating_factor_id', $ratingFactor->id)
                         ->first();
-                    if (!isset($voteRating)) {
+                    if (! isset($voteRating)) {
                         // Create a new vote rating with a rating of 0
                         $vote->voteRatings()->create([
                             'entry_id'         => $entry->id,
@@ -247,12 +252,12 @@ class Contest extends Model
             $vote->refresh();
             $hasAtLeastOneRating = false;
             foreach ($vote->voteRatings as $voteRating) {
-                if (!empty($voteRating->rating)) {
+                if (! empty($voteRating->rating)) {
                     $hasAtLeastOneRating = true;
                     break;
                 }
             }
-            if (!$hasAtLeastOneRating) {
+            if (! $hasAtLeastOneRating) {
                 $vote->voteRatings()->delete();
                 $vote->delete();
             }
